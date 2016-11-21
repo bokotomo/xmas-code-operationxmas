@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="ja"> 
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Operation X'MASに参加</title>
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<meta name="viewport" content="width=device-width">
+<meta http-equiv="Content-Script-Type" content="text/javascript">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<link href="" rel="shortcut icon" type="image/x-icon">
+<link rel='stylesheet' type='text/css' href='design.css'>
+<link rel="stylesheet" href="font/font-awesome/css/font-awesome.min.css"/>
+<script src="js/jquery-2.0.2.min.js" type="text/javascript"></script>
+<script src="js/a.js" type="text/javascript"></script>
+<script src='http://cdnjs.cloudflare.com/ajax/libs/gsap/1.11.8/TweenMax.min.js'></script>
+<script type="text/javascript">
+//jQuery
+$(document).ready(function(){
+
+$(".entry_xmas_btn").click(function(){
+	
+	$(".modal_area").show();
+	$(".modal_back").show();
+});
+
+$(".modal_back").click(function(){
+	
+	$(".modal_area").hide();
+	$(".modal_back").hide();
+});
+
+$(".join_user").click(function(){
+	
+	$(".modal_area").hide();
+	$(".modal_back").hide();
+});
+
+
+
+$(".form_send_btn").click(function(){
+	if($(".form_ria:checked").val()==1){
+		alert("非リア充でないと登録できません。");
+	}else{
+		check_form=1;
+		if($(".form_name").val()==""){
+			alert("ニックネームを入力してください。");
+			check_form=0;
+		}
+		if($(".form_mail").val()==""){
+			alert("メールアドレスを入力してください。");
+			check_form=0;
+		}
+		
+		if(check_form == 1){
+			//ok
+			
+		}
+	}
+	
+});
+
+
+var count_scll_sw=0;
+$(window).on('load scroll resize',function(){
+	var scrTop = $(window).scrollTop(),
+	winHeight = $(window).height();
+	
+	if(scrTop > 1300 &&  count_scll_sw == 0){
+		count_scll_sw=1;var timer1 = setInterval(loop, 1000 / 20);
+		play();
+	}
+});
+
+
+// CUSTOMISABLE
+var sides  = 5;
+var canvasSize = 300;
+var padding = 45;
+var data = [
+[40,60,70,50,80],
+[20,55,70,87,80],
+[63,55,70,87,80],
+[100,55,70,87,80],
+[90,55,70,87,80]
+];
+
+var feilds = [
+['入手','破壊力','かっこよさ','使用難易度','1'],
+['入手','破壊力','かっこよさ','使用難易度','2'],
+['入手','破壊力','かっこよさ','使用難易度','3'],
+['入手','破壊力','かっこよさ','使用難易度','4'],
+['入手','破壊力','かっこよさ','使用難易度','5']
+];
+
+// Variable
+var ctx2 = new Array(5);
+var canvas2 = new Array(5);
+
+canvas2[0] = $('#graph')[0];
+ctx2[0] = canvas2[0].getContext('2d');
+
+canvas2[1] = $('#graph2')[0];
+ctx2[1] = canvas2[1].getContext('2d');
+
+canvas2[2] = $('#graph3')[0];
+ctx2[2] = canvas2[2].getContext('2d');
+
+canvas2[3] = $('#graph4')[0];
+ctx2[3] = canvas2[3].getContext('2d');
+
+canvas2[4] = $('#graph5')[0];
+ctx2[4] = canvas2[4].getContext('2d');
+
+var centerX = canvasSize / 2;
+var centerY = canvasSize / 2;
+var shapesArray = [];
+var dataArray = [];
+var radius = canvasSize / 2 - padding;
+
+for(i=0;i<canvas2.length;i++){
+	canvas2[i].width = canvasSize;
+	canvas2[i].height = canvasSize;
+}
+
+
+// Prototypes
+Shape = function() {}
+Shape.pt = Shape.prototype;
+
+Point = function() {};
+Point.pt = Point.prototype;
+
+// Functions
+function loop() {
+for(var tom=0;tom<5;tom++){
+  ctx2[tom].clearRect(0, 0, canvasSize, canvasSize);
+
+  for (var j = 0; j < shapesArray.length; j++) {
+    var shape = shapesArray[j];
+    ctx2[tom].beginPath();
+    ctx2[tom].lineTo(shape.points[0].x, shape.points[0].y);
+
+    for (var i = 0; i < shape.points.length; i++) {
+      ctx2[tom].lineTo(shape.points[i].x, shape.points[i].y);
+    }
+
+    ctx2[tom].fillStyle = shape.fill;
+    ctx2[tom].strokeStyle = shape.stroke;
+    ctx2[tom].lineWidth = shape.linewidth;
+
+    ctx2[tom].closePath();
+    ctx2[tom].fill();
+    ctx2[tom].stroke();
+  }
+  for (var i = 0; i < shapesArray[0].points.length; i++) {
+    ctx2[tom].strokeStyle = '#54c3ef';
+    ctx2[tom].lineWidth = 1;
+    ctx2[tom].moveTo(centerX, centerY);
+    ctx2[tom].lineTo(shapesArray[0].points[i].x, shapesArray[0].points[i].y);
+    ctx2[tom].stroke();
+  }
+
+  for (var j = 0; j < dataArray.length; j++) {
+    var shape = dataArray[j];
+    ctx2[tom].beginPath();
+    ctx2[tom].lineTo(shape.points[0].x, shape.points[0].y);
+
+    for (var i = 0; i < shape.points.length; i++) {
+      ctx2[tom].lineTo(shape.points[i].x, shape.points[i].y);
+    }
+
+    ctx2[tom].fillStyle = shape.fill;
+    ctx2[tom].strokeStyle = shape.stroke;
+    ctx2[tom].lineWidth = shape.linewidth;
+
+    ctx2[tom].closePath();
+    ctx2[tom].fill();
+    ctx2[tom].stroke();
+
+    var shape = dataArray[j];
+    ctx2[tom].textBaseline = 'middle';
+    for (var i = 0; i < shape.feilds.length; i++) {
+      var _x = Math.round(shape.feilds[i].x);
+      if (_x < centerX) {
+        ctx2[tom].textAlign = 'right';
+      } else if (_x > centerX) {
+        ctx2[tom].textAlign = 'left';
+      } else if (_x == centerX) {
+        ctx2[tom].textAlign = 'center';
+      }
+      ctx2[tom].fillText(feilds[tom][i], shape.feilds[i].x, shape.feilds[i].y);
+    }
+
+  }
+
+}
+}
+
+
+
+
+function setupShape(_sides, _radius, _fill, _stroke, _linewidth) {
+
+  var shape = new Shape();
+  shape.sides = _sides;
+  shape.radius = _radius;
+  shape.fill = _fill;
+  shape.stroke = _stroke;
+  shape.linewidth = _linewidth;
+  shape.points = [];
+
+  for (var i = 0; i < _sides; i++) {
+    p = new Point();
+    ang = Math.PI / (_sides / 2) * i;
+    sang = Math.sin(ang);
+    cang = Math.cos(ang);
+    p.x = centerX + sang * _radius;
+    p.y = centerY + cang * _radius;
+    shape.points.push(p);
+  }
+
+  shapesArray.push(shape);
+
+}
+
+function setupData(_data, _fill, _stroke, _linewidth) {
+  var shape = new Shape();
+  length = data[0].length;
+  shape.sides = length;
+  shape.fill = _fill;
+  shape.stroke = _stroke;
+  shape.linewidth = _linewidth;
+  shape.points = [];
+  shape.feilds = [];
+  
+  for(var i = 0; i < length; i++){
+    p    = new Point();
+    ang  = Math.PI/(length/2)*i;
+    sang = Math.sin(ang);
+    cang = Math.cos(ang);
+    p.x  = centerX + sang*(data[0][i]/100*radius);
+    p.y  = centerY + cang*(data[0][i]/100*radius);
+    shape.points.push(p);
+    
+    p    = new Point();
+    ang  = Math.PI/(length/2)*i;
+    sang = Math.sin(ang);
+    cang = Math.cos(ang);
+    p.x  = centerX + sang*(radius+20);
+    p.y  = centerY + cang*(radius+20);
+    shape.feilds.push(p);
+  }
+  
+  dataArray.push(shape);
+
+  for(var i = 0; i < shape.points.length; i++) {
+    TweenMax.from(shape.points[i], Math.random()*0.75+0.25, {x:canvasSize/2, y:canvasSize/2, delay:1.2});
+  }
+}
+
+function play() {
+  setupShape(sides, radius, '#2a758c', '#36d1dd', 3);
+  setupShape(sides, radius * 3 / 4, '#52abc6', '#36d1dd', 1);
+  setupShape(sides, radius / 2, '#88cfe5', '#36d1dd', 1);
+  setupShape(sides, radius * 1 / 4, '#45cbf4', '#36d1dd', 1);
+
+  for (var j = 0; j < shapesArray.length; j++) {
+    var shape = shapesArray[j];
+    for (var i = 0; i < shape.points.length; i++) {
+      TweenMax.from(shape.points[i], Math.random() * 0.75 + 1, {
+        x: canvasSize / 2,
+        y: canvasSize / 2,
+        ease: Elastic.easeOut
+      });
+    }
+  }
+
+
+
+  setupData(data[0], 'rgba(54, 208, 216, 0.7)', '#36d8cc', 2);
+
+}
+
+
+//play();
+
+
+});
+</script>
+</head>
+<!------------------------------------------ body ----------------------------------------->
+<body>
+<div id="page">
+	<div style="position: fixed;right:25px;top:20px;z-index: 20;">
+		<a href="https://twitter.com/share" class="twitter-share-button"{count}>Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+	</div>
+	
+	<div class="join_user" style="position: fixed;right:25px;bottom:20px;z-index: 20;background:#333;color:#fff;padding:5px 20px;text-align:center;border-radius: 5px;border: 1px solid  #58e6eb;cursor: pointer;">
+		参加者:3
+	</div>
+	
+
+<div class="modal_area" style="position: fixed;width: 100%;height:100%;color:#fff;z-index: 10;display: none;">
+	<div class="modal_back" style="position: fixed;width: 100%;height:100%;display: none;cursor: pointer;"></div>
+	<div style="margin:auto;width:800px;height:440px;margin-top:50px;position: relative;">
+		<div style="width:100%;height:440px;background: #333;opacity: 0.9;position: absolute;border-radius: 5px;box-shadow: 0px 0px 2px 1px #58e6eb;"></div>
+		<div style="width:100%;height:440px;position: absolute;text-align: center;color:#fff;">
+			<div style="padding:30px 0px 20px 0px;">
+				<h2><i class="fa fa-tag"></i> 戦いの準備はいいか</h2>
+				<p style="padding-top:20px;">
+					私たちと共にやつらに立ち向かう人を募集する。<br>
+					専用端末は当日(12月24日00:00:00)に公開予定だ。<br>
+					立ち上がれ。同志たちよ。<br>
+					<div style="padding:20px 0px 20px 0px;width:500px;margin:auto;">
+						<input type="text" class="form_name" placeholder="ニックネーム" style="border:none;width:100%;height:40px;line-height:40px;color:#fff;font-size:16px;box-sizing: border-box;background: #808080;padding-left: 10px;" autofocus>
+						
+						<input type="text" class="form_mail" placeholder="info@oparationxmas.com" style="border:none;width:100%;height:40px;line-height:40px;color:#fff;font-size:16px;box-sizing: border-box;background: #808080;padding-left: 10px;margin-top:20px;">
+						
+						
+							<div class="sample">
+								    <input type="radio" name="s4" class="form_ria" id="select1" value="1" checked="">
+								    <label for="select1">リア充</label>
+								    <input type="radio" name="s4" class="form_ria" id="select2" value="0">
+								    <label for="select2">非リア充</label>
+							</div>
+
+
+
+						
+						<div class="form_send_btn">この内容で参加する</div>
+					</div>
+				</p>
+			</div>
+		</div>
+	</div>
+</div>
+	
+	<div style="opacity: 0.95;background: #000;text-align:center;padding-bottom: 50px;">
+
+		
+			
+		<div style="color:#fff;font-size:50px;font-weight:bold;padding-top:20px"><img src="img/xmas_logo.png" style="width:480px;"></div>
+		
+		<canvas id="canvas" width="500" height="480" >cccc</canvas>
+		
+		
+		<div style="color:#87efff;font-weight: bold;text-align: center;padding:20px 0px 40px 0px;">
+			<div style=""><br><br>
+				<span style="font-size: 30px; font-weight: bold">東京中で「臭いもの」を爆発させ、ria-10を撃退せよ！</span><br><br><br><br><br>
+			今年もまたX-dayが近づいてきた。ria-10が大量に攻めてくる。<br><br><br>
+			長い歴史の中で、私たちは常にやつらの後塵を拝してきた。<br><br><br>
+			我が物顔で街を闊歩するria-10。私たちは目立たないように時が過ぎるのを待つしかなかった。<br><br>
+			<br>
+			<span style="font-size: 25px; font-weight: bold">しかし、そんな時代はもう終わった。<br><br>私たちはついに発見したのだ。やつらへの攻撃手段を。</span><br><br>
+			どんな攻撃にも耐え、果てはそれでこちらを攻撃してくるria-10。<br><br><br>
+			そんなやつらへの唯一の対抗手段。それは,<br><br><br>
+			<span style="font-size: 30px; font-weight: bold">”臭み”だ。</span><br><br><br>
+			憎きria-10はその性質上、一度臭くなってしまった場所には近づくことができない。<br><br>
+			そう、東京中を臭い場所で埋め尽くすのだ。<br><br>諸君の力を貸してくれ。<br>
+			
+			</div>
+			
+		</div>
+		
+		<div class="entry_xmas_btn" style="width:220px;height:50px;line-height:50px;text-align: center;color:#fff;border-radius: 10px;margin:auto;background: #3789af;cursor: pointer;font-size:20px;">ENTRY</div>
+		
+		<br><br><br><br>
+		<div style="width:100%;padding:20px 0px 0px;color:#87efff;font-weight: bold;font-size: 30px">
+			mission.1  決戦に向けて武器を調達せよ
+		</div>
+		
+		<div style="width:900px;margin:auto;padding-top:20px;">
+			<div style="width:300px;float: left;">
+				<canvas id='graph'></canvas>
+				<p style="color:#5edfe5; font-weight: bold;">シュールストレミング</p>
+			</div>
+			
+			<div style="width:300px;float: left;">
+				<canvas id='graph2'></canvas>
+				<p style="color:#5edfe5; font-weight: bold;">くさや</p>
+			</div>
+			
+			<div style="width:300px;float: left;">
+				<canvas id='graph3'></canvas>
+				<p style="color:#5edfe5; font-weight: bold;">ドリアン</p>
+			</div>
+			<div class="clear-fix" style="margin:10px 0px;"></div>
+			<div style="width:300px;float: left;">
+				<canvas id='graph4'></canvas>
+				<p style="color:#5edfe5;font-weight: bold;">納豆</p>
+			</div>
+			
+			<div style="width:300px;float: left;">
+				<canvas id='graph5'></canvas>
+				<p style="color:#5edfe5; font-weight: bold;">くつした</p>
+			</div>
+			<div class="clear-fix"></div>
+		</div>
+				
+
+
+		
+		<div style="padding:60px 0px 30px 0px;width:1000px;margin: 50px auto 0px;box-shadow: 0px 0px 2px 1px #58e6eb;background:#333;border-radius: 5px;">
+			
+		
+		
+					
+			<div style="float:left;width:200px;color: #fff;">
+				<a href="http://item.rakuten.co.jp/kitchen-garden/10004771/" target="_blank">
+					<img src="img/sc.png" style="width:120px;">
+				</a>
+				<p style="padding-top:5px;">シュールストレミング</p>
+			</div>
+			
+			
+			<div style="float:left;width:200px;color: #fff;">
+			<a rel="nofollow" target="_blank" href="http://www.amazon.co.jp/gp/product/B00302AQDG/ref=as_li_ss_il?ie=UTF8&camp=247&creative=7399&creativeASIN=B00302AQDG&linkCode=as2&tag=assocdurian-22"><img border="0" src="http://ws-fe.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=B00302AQDG&Format=_SL110_&ID=AsinImage&MarketPlace=JP&ServiceVersion=20070822&WS=1&tag=assocdurian-22" ></a><img src="http://ir-jp.amazon-adsystem.com/e/ir?t=assocdurian-22&l=as2&o=9&a=B00302AQDG" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" />
+
+			<p style="padding-top:5px;">くさや</p>
+			</div>
+			
+
+		
+			<div style="float:left;width:200px;color: #fff;">	
+			<a rel="nofollow" target="_blank" href="http://www.amazon.co.jp/gp/product/B00CMK5920/ref=as_li_ss_il?ie=UTF8&camp=247&creative=7399&creativeASIN=B00CMK5920&linkCode=as2&tag=assocdurian-22"><img border="0" src="http://ws-fe.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=B00CMK5920&Format=_SL110_&ID=AsinImage&MarketPlace=JP&ServiceVersion=20070822&WS=1&tag=assocdurian-22" ></a><img src="http://ir-jp.amazon-adsystem.com/e/ir?t=assocdurian-22&l=as2&o=9&a=B00CMK5920" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" />
+				<p style="padding-top:5px;">ドリアン</p>
+			</div>
+
+			<div style="float:left;width:200px;color: #fff;">
+<a rel="nofollow" target="_blank" href="http://www.amazon.co.jp/gp/product/B005VA6IEG/ref=as_li_ss_il?ie=UTF8&camp=247&creative=7399&creativeASIN=B005VA6IEG&linkCode=as2&tag=assocdurian-22"><img border="0" src="http://ws-fe.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=B005VA6IEG&Format=_SL110_&ID=AsinImage&MarketPlace=JP&ServiceVersion=20070822&WS=1&tag=assocdurian-22" ></a><img src="http://ir-jp.amazon-adsystem.com/e/ir?t=assocdurian-22&l=as2&o=9&a=B005VA6IEG" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" />
+				<p style="padding-top:5px;">納豆</p>
+			</div>
+			
+			<div style="float:left;width:200px;color: #fff;">
+<a rel="nofollow" target="_blank" href="http://www.amazon.co.jp/gp/product/B017100DZI/ref=as_li_ss_il?ie=UTF8&camp=247&creative=7399&creativeASIN=B017100DZI&linkCode=as2&tag=assocdurian-22"><img border="0" src="http://ws-fe.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=B017100DZI&Format=_SL110_&ID=AsinImage&MarketPlace=JP&ServiceVersion=20070822&WS=1&tag=assocdurian-22" ></a><img src="http://ir-jp.amazon-adsystem.com/e/ir?t=assocdurian-22&l=as2&o=9&a=B017100DZI" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" />
+				<p style="padding-top:5px;">くつした</p>
+			</div>
+			<div class="clear-fix"></div>
+			
+		<div style="width:100%;padding:40px 0px 20px;color:#87efff;font-weight: bold;font-size: 20px">
+			他にも購入場所は多数ある。<br>google検索やお家を探索して入手するのだ。
+			
+		</div>
+
+
+		</div>
+		
+		
+		
+		<div style="width:100%;padding:100px 0px 50px;color:#87efff;font-weight: bold;font-size: 30px">
+			mission.2  決戦の日になったら、各地で臭いを爆発させよ。
+		</div>
+		<div style="color:#87efff;font-weight: bold;text-align: center;padding:20px 0px 40px 0px;">
+			<div style="">
+		各自の武器を用意したら、あとはそれを行使するだけだ。思う存分暴れてくれたまえ。<br><br><br>
+		武器によって効果範囲が大きく異なるので、注意してくれ。<br><br>
+		<span style="font-size: 25px; font-weight: bold">武器行使の結果は、専用端末を用いて写真とともに報告するように。</span><br><br>
+		さらに、端末には同志の活躍がリアルタイムで表示される。<br><br>
+		君たちの力で各地を制圧してくれ。
+			
+			</div>
+			
+		</div>
+		
+		<div class="entry_xmas_btn" style="width:220px;height:50px;line-height:50px;text-align: center;color:#fff;border-radius: 10px;margin:auto;background: #3789af;cursor: pointer;font-size:20px;">ENTRY</div>
+
+	</div>
+	
+</div>
+</body>
